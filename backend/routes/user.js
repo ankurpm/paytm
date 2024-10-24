@@ -14,26 +14,21 @@ mongoose.connect(`${dbConfig.connectionString}/${dbConfig.dbName}`)
 .catch(err => console.log("Error connecting to DB:", err));
 
 function validateUser(reqBody){
-    console.log("Inside validateUser: "+reqBody)
     const reqSchema = zod.object({
         email: zod.string().email(),
         password: zod.string().min(8),
         firstName: zod.string().max(50),
         lastName: zod.string().max(50)
     })
-    console.log("zod schema created")
-
     const response = reqSchema.safeParse(reqBody);
-    console.log("zod validation done: "+response)
-
     return response;
-
 }
 
-//connect to mongoose server
+function validatePassword(user, password){
+    return user.password === password
+}
 
 router.post("/signup", async function(req, res) {
-    console.log("Inside the post method")
 
     const username = req.body.email
     const password = req.body.password
@@ -48,10 +43,9 @@ router.post("/signup", async function(req, res) {
     //check if user already exists in db
     const userExists = await User.findOne({username: username})
     if(userExists){
-        return res.status(400).json({msg:"user already exists"})
+        return res.status(400).json({msg:"Email already exists"})
     }
-    //if user is new 
-    //store in db
+    //if user is new then store the user info in DB
     const newUser = new User({
         username:username, 
         password:password, 
@@ -73,13 +67,24 @@ router.post("/signup", async function(req, res) {
 
 })
 
-app.use('/signin', function(req, res) {
+router.post('/signin', async function(req, res) {
 
-    //validate user credentials
+    const username = req.body.email
+    const password = req.body.password
+    //check if user exists in db
+    const user = await User.findOne({username: username})
+    if(!user){
+        return res.status(401).json({msg:"Invalid credentials"})
+    }
+    const isMatch = validatePassword(user, password)
+    //compare password
+    if(!isMatch){
+        return res.status(401).json({msg:"Invalid credentials"})
+    }
     //create jwt token
+    const token = jwt.sign({username: username}, JWT_SECRET)
     //return the success response
-    //return 411 error code for errror 
-
+    return res.json({message:"User logged in successfully", token: token})
 
 })
 
