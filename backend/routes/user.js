@@ -1,13 +1,14 @@
 const express = require('express');
-const router = express.Router();
 const app = express();
+const router = express.Router();
 const zod = require("zod");
-const User = require('../db');
+const { User, Account } = require('../db');
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require('../config');
 const mongoose = require('mongoose');
 const dbConfig = require("./../config.json");
 const authMiddleware = require('../middleware');
+app.use(express.json());
 
 //create mongo db connection
 mongoose.connect(`${dbConfig.connectionString}/${dbConfig.dbName}`)
@@ -55,6 +56,15 @@ router.post("/signup", async function (req, res) {
     });
     try {
         const userCreated = await newUser.save()
+        //fetch userId of the created user
+        const userId = userCreated._id;
+        //add userId to Account schema and add default balance
+        const account = new Account({
+            userId: userId,
+            balance: 10000
+        })
+
+        const accountUpdate = await account.save()
 
         //create jwt token
         const token = jwt.sign({ username: username }, JWT_SECRET)
@@ -74,6 +84,7 @@ router.post('/signin', async function (req, res) {
     const password = req.body.password
     //check if user exists in db
     const user = await User.findOne({ username: username })
+    const userId = user._id;
     if (!user) {
         return res.status(401).json({ msg: "Invalid credentials" })
     }
@@ -83,13 +94,13 @@ router.post('/signin', async function (req, res) {
         return res.status(401).json({ msg: "Invalid credentials" })
     }
     //create jwt token
-    const token = jwt.sign({ username: username }, JWT_SECRET)
+    const token = jwt.sign({ userId: userId }, JWT_SECRET)
     //return the success response
     return res.json({ message: "User logged in successfully", token: token })
 
 })
 
-router.put('', authMiddleware, async function (req, res) {
+router.put('/', authMiddleware, async function (req, res) {
 
     const password = req.body.password
     const firstName = req.body.firstName
@@ -130,7 +141,7 @@ router.get('/bulk', async (req, res) => {
             return users.filter(user => user.lastName === queryParam || user.firstName === queryParam)
         })
         // send back the results
-        return res.status(200).json({users: users})
+        return res.status(200).json({ users: users })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ msg: "Error fetching users" })

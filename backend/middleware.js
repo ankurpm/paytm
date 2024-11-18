@@ -6,7 +6,7 @@ function authMiddleware(req, res, next) {
     const token = bearerToken.split(' ')[1]
     try {
         const decodedToken = jwt.verify(token, JWT_SECRET);
-        req.userId = decodedToken.username;
+        req.userId = decodedToken.userId;
     } catch (err) {
         return res.status(403).json(
             { msg: "Invalid token" }
