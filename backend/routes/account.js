@@ -57,6 +57,7 @@ router.post('/transfer', authMiddleware, async function (req, res) {
         }
 
         //perform account updates
+        //*****findByIdAndUpdate***** function can also be used to update account
         const fromUpdate = await Account.updateOne({userId: fromUser}, { $inc: { balance: -amount}})
         const toUpdate = await Account.updateOne({userId: toUser}, { $inc: { balance: amount}})
         console.log("update from user:"+fromUpdate)
