@@ -1,8 +1,16 @@
+import { useState } from "react";
+import { AppBar } from "./AppBar";
+import { Balance } from "./Balance";
+import { Users } from "./Users";
 
 export default function Dashboard() {
+    
     return (
         <div>
-            This is dashboard interface
+           <AppBar/>
+           <Balance value={"12000"}/>
+           <Users/>
         </div>
     )
 }
+
