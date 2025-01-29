@@ -6,15 +6,16 @@ import axios from 'axios'
 export function Users() {
     // Replace with backend call
     const [users, setUsers] = useState([]);
+    const [filter, setFilter] = useState("");
 
     useEffect(()=> {
-        axios.get('http://localhost:3000/api/v1/user/bulk')
+        axios.get('http://localhost:3000/api/v1/user/bulk?filter='+filter)
         .then(response => {
             setUsers(response.data.users);
         }).catch(error => {
             alert(error.message);
         })
-    },[]);
+    },[filter]);
 
     return (
         <div>
@@ -22,7 +23,9 @@ export function Users() {
                 Users
             </div>
             <div className="my-2">
-                <input type="text" placeholder="Search users..." className="w-full px-2 py-1 border rounded border-slate-200"></input>
+                <input onChange={ (e) => {
+                    setFilter(e.target.value)
+                }} type="text" placeholder="Search users..." className="w-full px-2 py-1 border rounded border-slate-200"></input>
             </div>
             <div>
             {users.map(user => <User user={user} />)}
