@@ -5,6 +5,7 @@ import Heading from "./Heading";
 import InputBox from "./InputBox";
 import SubHeading from "./SubHeading";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Signin() {
     const [email, setEmail] = useState('')
@@ -27,12 +28,12 @@ export default function Signin() {
                             email,
                             password
                         })
-                        .catch(error => { console.log(error) })
+                        .catch(error => { alert(error.message)})
                         .then(response => {
-                            const msg = response.data.message;
-                            console.log("response msg is:"+msg);
-                            const token = response.data.token;
-                            console.log("TOKEN value is : "+token)
+                            if(response.status === 200) {
+                                localStorage.setItem('atokid', response.data.token);
+                            }
+                            
                         });
                     }} label={"Sign in"} />
                     <BottomWarning label={"Don't have an account?"} buttonText={"Sign up"} to={"/"} />

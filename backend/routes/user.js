@@ -138,7 +138,11 @@ router.get('/bulk', async (req, res) => {
         //get all db users & filter based on query param
 
         const users = await User.find().then((users) => {
-            return users.filter(user => user.lastName === queryParam || user.firstName === queryParam)
+
+            if(queryParam) {
+                return users.filter(user => user.lastName === queryParam || user.firstName === queryParam)
+            }
+            return users;
         })
         // send back the results
         return res.status(200).json({ users: users })

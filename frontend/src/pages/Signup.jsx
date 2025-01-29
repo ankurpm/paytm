@@ -36,9 +36,12 @@ export default function Signup() {
                             email,
                             password
                         }).then(response => {
-                            console.log(response)
+                            if(response.statusCode === 200) {
+                                localStorage.setItem('atokid', response.data.token);
+                                alert('Registration successful')
+                            }
                         }).catch(error => {
-                            console.error(error)
+                            alert(error.message)
                         })
                     }} label={"SignUp"}></Button>
                     <BottomWarning label={"Already have an account?"} buttonText={"Sign in"} to={"/signin"} />
