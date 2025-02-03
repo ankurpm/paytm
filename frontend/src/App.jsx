@@ -8,6 +8,7 @@ import Transfer from "./pages/Transfer"
 function App() {
 
   return (
+    <>
     <BrowserRouter>
     <Routes>
       <Route path='/' element={<Signup/>}/>
@@ -16,6 +17,7 @@ function App() {
       <Route path='/transfer' element={<Transfer/>}/>
     </Routes>
     </BrowserRouter>
+    </>
   )
 }
 
