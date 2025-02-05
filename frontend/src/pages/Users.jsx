@@ -10,14 +10,16 @@ export function Users() {
     const [filter, setFilter] = useState("");
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/v1/user/bulk?filter=' + filter)
-            .then(response => {
-                setUsers(response.data.users);
-            }).catch(error => {
-                alert(error.message);
-            })
+        const getUsers = setTimeout(() => {
+            axios.get('http://localhost:3000/api/v1/user/bulk?filter=' + filter)
+                .then(response => {
+                    setUsers(response.data.users);
+                }).catch(error => {
+                    alert(error.message);
+                })
+        }, 800);
+        return () => clearTimeout(getUsers);
     }, [filter]);
-
 
     return (
         <div>
