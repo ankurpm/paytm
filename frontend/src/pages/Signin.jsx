@@ -5,11 +5,13 @@ import Heading from "./Heading";
 import InputBox from "./InputBox";
 import SubHeading from "./SubHeading";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Signin() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const navigate = useNavigate();
+    
 
     return (
         <div className="bg-slate-300 h-screen flex justify-center">
@@ -28,13 +30,15 @@ export default function Signin() {
                             email,
                             password
                         })
-                        .catch(error => { alert(error.message)})
                         .then(response => {
                             if(response.status === 200) {
                                 localStorage.setItem('atokid', response.data.token);
+                                navigate('/dashboard');
                             }
                             
-                        });
+                        }).catch(error => {
+                            alert(error.message)
+                        })
                     }} label={"Sign in"} />
                     <BottomWarning label={"Don't have an account?"} buttonText={"Sign up"} to={"/"} />
                 </div>
